@@ -1,24 +1,19 @@
-import { Auth } from '@aws-amplify/auth'
-import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit'
+import { createSlice, isAnyOf } from '@reduxjs/toolkit'
 
 import { StoreStatus } from '../../common/types'
-import { ConfirmSignUpForm } from '../../components/ConfirmSignUp/ConfirmSignUp.types'
-import { ForgotPasswordForm } from '../../components/ForgotPassword/ForgotPassword.types'
-import { CognitoUserAmplify } from '../../components/Private/Private.types'
-import { NewPasswordForm, ResetPasswordForm } from '../../components/ResetPassword/ResetPassword.types'
-import { SignInForm } from '../../components/SignIn/SignIn.types'
-import { SignUpForm } from '../../components/SignUp/SignUp.types'
-import { AuthState } from './Auth.types'
 import {
-  amplifyConfirmSignUp,
-  amplifyForgotPassword,
-  amplifyNewPassword,
-  amplifyResendSignUp,
-  amplifyResetPassword,
-  amplifySignIn,
-  amplifySignOut,
-  amplifySignUp,
-} from './AuthAPI'
+  confirmSignUp,
+  forgotPassword,
+  newPassword,
+  refreshToken,
+  resendForgotPassword,
+  resendSignUp,
+  resetPassword,
+  signIn,
+  signOut,
+  signUp,
+} from './Auth.service'
+import { AuthState } from './Auth.types'
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -26,51 +21,6 @@ const initialState: AuthState = {
   status: StoreStatus.Idle,
   user: null,
 }
-
-export const refreshToken = createAsyncThunk("auth/refreshToken", async () => {
-  // Adding the bypassCache will force Amplify to get the user details from Cognito
-  // instead of LocalStorage and will refresh the token as well
-  const cognitoUser: CognitoUserAmplify = await Auth.currentAuthenticatedUser({ bypassCache: true })
-  return cognitoUser?.attributes
-})
-
-export const signUp = createAsyncThunk("auth/signUp", async (data: SignUpForm) => {
-  return amplifySignUp(data)
-})
-
-export const confirmSignUp = createAsyncThunk("auth/confirmSignUp", async (data: ConfirmSignUpForm) => {
-  return amplifyConfirmSignUp(data)
-})
-
-export const resendSignUp = createAsyncThunk("auth/resendSignUp", async (data: ConfirmSignUpForm) => {
-  return amplifyResendSignUp(data)
-})
-
-export const signIn = createAsyncThunk("auth/signIn", async (data: SignInForm) => {
-  await amplifySignIn(data)
-  return ((await Auth.currentUserInfo()) as CognitoUserAmplify)?.attributes
-})
-
-export const forgotPassword = createAsyncThunk("auth/forgotPassword", async (data: ForgotPasswordForm) => {
-  return await amplifyForgotPassword(data)
-})
-
-export const resendForgotPassword = createAsyncThunk("auth/resendForgotPassword", async (data: ForgotPasswordForm) => {
-  return await amplifyForgotPassword(data)
-})
-
-export const resetPassword = createAsyncThunk("auth/resetPassword", async (data: ResetPasswordForm) => {
-  return amplifyResetPassword(data)
-})
-
-export const newPassword = createAsyncThunk("auth/newPassword", async (data: NewPasswordForm) => {
-  await amplifyNewPassword(data)
-  return ((await Auth.currentUserInfo()) as CognitoUserAmplify)?.attributes
-})
-
-export const signOut = createAsyncThunk("auth/signOut", async () => {
-  return amplifySignOut()
-})
 
 export const AuthSlice = createSlice({
   name: "auth",

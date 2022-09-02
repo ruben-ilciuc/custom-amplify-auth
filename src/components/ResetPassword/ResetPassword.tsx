@@ -1,5 +1,3 @@
-import '../../styles/main.scss'
-
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Divider } from 'primereact/divider'
@@ -13,9 +11,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import {
-    confirmSignUp, forgotPassword, resetErrors, resetState
-} from '../../features/Auth/AuthSlice'
+import { confirmSignUp, forgotPassword } from '../../features/Auth/Auth.service'
+import { resetErrors, resetState } from '../../features/Auth/Auth.slice'
 import { ResetPasswordForm, ResetPasswordProps } from './ResetPassword.types'
 
 export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
@@ -42,7 +39,10 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
   }, [])
 
   useEffect(() => {
-    if ([StoreStatus.Failed, StoreStatus.Succeeded].includes(status) && !showMessage) {
+    if (
+      [StoreStatus.Failed, StoreStatus.Succeeded].includes(status) &&
+      !showMessage
+    ) {
       setShowMessage(true)
     }
   }, [showMessage, status])
@@ -57,11 +57,18 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
   const onSubmit = (data: ResetPasswordForm) => {
     setFormData(data)
     reset()
-    dispatch(confirmSignUp({ email: data.email, code: String(data.code.match(/(\d)+/g)?.join("")) }))
+    dispatch(
+      confirmSignUp({
+        email: data.email,
+        code: String(data.code.match(/(\d)+/g)?.join("")),
+      })
+    )
   }
 
   const getFormErrorMessage = (name: keyof ResetPasswordForm) => {
-    return errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    return (
+      errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    )
   }
 
   const onCloseDialog = () => {
@@ -75,7 +82,9 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
   const dialogFooter = (
     <div className="flex justify-content-center">
       <Button
-        label={status === StoreStatus.Succeeded ? "Access your account" : "Try again"}
+        label={
+          status === StoreStatus.Succeeded ? "Access your account" : "Try again"
+        }
         className="p-button-text"
         autoFocus
         onClick={onCloseDialog}
@@ -111,14 +120,26 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
         <div className="flex justify-content-center flex-column pt-6 px-3">
           <h4 className="flex align-items-center">
             <i
-              className={`pi pi-${status === StoreStatus.Succeeded ? "check-circle" : "exclamation-triangle"} mr-2`}
-              style={{ fontSize: "2rem", color: status === StoreStatus.Succeeded ? "var(--green-500)" : "var(--red-500)" }}
+              className={`pi pi-${
+                status === StoreStatus.Succeeded
+                  ? "check-circle"
+                  : "exclamation-triangle"
+              } mr-2`}
+              style={{
+                fontSize: "2rem",
+                color:
+                  status === StoreStatus.Succeeded
+                    ? "var(--green-500)"
+                    : "var(--red-500)",
+              }}
             ></i>
-            Reset password {status === StoreStatus.Succeeded ? "succeeded!" : "failed!"}
+            Reset password{" "}
+            {status === StoreStatus.Succeeded ? "succeeded!" : "failed!"}
           </h4>
           {status === StoreStatus.Succeeded ? (
             <p style={{ lineHeight: 1.5 }}>
-              Tha password for your account <b>{formData?.email}</b> has been changed.
+              Tha password for your account <b>{formData?.email}</b> has been
+              changed.
             </p>
           ) : (
             <code style={{ lineHeight: 1.5 }}>{message}</code>
@@ -138,13 +159,27 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
                   control={control}
                   rules={{
                     required: "Email is required.",
-                    pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, message: "Invalid email address. E.g. example@email.com" },
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: "Invalid email address. E.g. example@email.com",
+                    },
                   }}
                   render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} disabled readOnly className={classNames({ "p-invalid": fieldState.error?.message })} />
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      disabled
+                      readOnly
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
+                    />
                   )}
                 />
-                <label htmlFor="email" className={classNames({ "p-error": !!errors.email })}>
+                <label
+                  htmlFor="email"
+                  className={classNames({ "p-error": !!errors.email })}
+                >
                   Email address*
                 </label>
               </span>
@@ -161,11 +196,16 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
                       id={field.name}
                       mask="9  9  9  9  9  9"
                       {...field}
-                      className={classNames({ "p-invalid": fieldState.error?.message })}
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
                     />
                   )}
                 />
-                <label htmlFor="code" className={classNames({ "p-error": errors.code })}>
+                <label
+                  htmlFor="code"
+                  className={classNames({ "p-error": errors.code })}
+                >
                   Confirmation code*
                 </label>
               </span>
@@ -182,13 +222,18 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
                       id={field.name}
                       {...field}
                       toggleMask
-                      className={classNames({ "p-invalid": fieldState.error?.message })}
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
                       header={passwordHeader}
                       footer={passwordFooter}
                     />
                   )}
                 />
-                <label htmlFor="password" className={classNames({ "p-error": errors.password })}>
+                <label
+                  htmlFor="password"
+                  className={classNames({ "p-error": errors.password })}
+                >
                   Password*
                 </label>
               </span>
@@ -205,24 +250,38 @@ export const ResetPassword: FC<ResetPasswordProps> = ({ isNewPassword }) => {
                       id={field.name}
                       {...field}
                       toggleMask
-                      className={classNames({ "p-invalid": fieldState.error?.message })}
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
                       header={passwordHeader}
                       footer={passwordFooter}
                     />
                   )}
                 />
-                <label htmlFor="confirmPassword" className={classNames({ "p-error": errors.confirmPassword })}>
+                <label
+                  htmlFor="confirmPassword"
+                  className={classNames({ "p-error": errors.confirmPassword })}
+                >
                   Confirm password*
                 </label>
               </span>
               {getFormErrorMessage("confirmPassword")}
             </div>
 
-            <Button type="submit" label="Confirm" className="mt-2" loading={status === StoreStatus.Loading} />
+            <Button
+              type="submit"
+              label="Confirm"
+              className="mt-2"
+              loading={status === StoreStatus.Loading}
+            />
           </form>
           <p className="mt-4">
             Didn't receive the instruction?{" "}
-            <Link to="#" className="ml-1" onClick={() => dispatch(forgotPassword(defaultValues))}>
+            <Link
+              to="#"
+              className="ml-1"
+              onClick={() => dispatch(forgotPassword(defaultValues))}
+            >
               Resend
             </Link>
           </p>

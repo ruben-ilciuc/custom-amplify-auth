@@ -1,5 +1,3 @@
-import '../../styles/main.scss'
-
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
@@ -9,7 +7,8 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import { forgotPassword, resetState } from '../../features/Auth/AuthSlice'
+import { forgotPassword } from '../../features/Auth/Auth.service'
+import { resetState } from '../../features/Auth/Auth.slice'
 import { ForgotPasswordForm, ForgotPasswordProps } from './ForgotPassword.types'
 
 export const ForgotPassword: FC<ForgotPasswordProps> = () => {
@@ -23,7 +22,10 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
   }
 
   useEffect(() => {
-    if ([StoreStatus.Failed, StoreStatus.Succeeded].includes(status) && formData) {
+    if (
+      [StoreStatus.Failed, StoreStatus.Succeeded].includes(status) &&
+      formData
+    ) {
       dispatch(resetState())
       navigate("/reset-password", { state: formData })
     }
@@ -43,7 +45,9 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
   }
 
   const getFormErrorMessage = (name: keyof ForgotPasswordForm) => {
-    return errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    return (
+      errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    )
   }
 
   return (
@@ -60,20 +64,37 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
                   control={control}
                   rules={{
                     required: "Email is required.",
-                    pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, message: "Invalid email address. E.g. example@email.com" },
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: "Invalid email address. E.g. example@email.com",
+                    },
                   }}
                   render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ "p-invalid": fieldState.error?.message })} />
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
+                    />
                   )}
                 />
-                <label htmlFor="email" className={classNames({ "p-error": !!errors.email })}>
+                <label
+                  htmlFor="email"
+                  className={classNames({ "p-error": !!errors.email })}
+                >
                   Email address*
                 </label>
               </span>
               {getFormErrorMessage("email")}
             </div>
 
-            <Button type="submit" label="Request instructions" className="mt-2" loading={status === StoreStatus.Loading} />
+            <Button
+              type="submit"
+              label="Request instructions"
+              className="mt-2"
+              loading={status === StoreStatus.Loading}
+            />
           </form>
         </div>
       </div>

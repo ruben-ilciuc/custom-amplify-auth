@@ -1,9 +1,8 @@
-import './App.css'
+import './styles/main.scss'
 
 import React from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
-// import { useAppDispatch } from './app/hooks'
 import { ConfirmSignUp } from './components/ConfirmSignUp/ConfirmSignUp'
 import { ForgotPassword } from './components/ForgotPassword/ForgotPassword'
 import Private from './components/Private/Private'
@@ -23,7 +22,10 @@ function App() {
           <Route path="/confirm" element={<ConfirmSignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/new-password" element={<ResetPassword isNewPassword />} />
+          <Route
+            path="/new-password"
+            element={<ResetPassword isNewPassword />}
+          />
           <Route path="/sign-out" element={<SignOut />} />
 
           {/* Private route */}

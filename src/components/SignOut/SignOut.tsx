@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import { signOut } from '../../features/Auth/AuthSlice'
+import { signOut } from '../../features/Auth/Auth.service'
 
 export const SignOut: FC = () => {
   const dispatch = useAppDispatch()

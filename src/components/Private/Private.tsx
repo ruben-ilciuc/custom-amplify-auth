@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import { refreshToken, signOut } from '../../features/Auth/AuthSlice'
+import { refreshToken, signOut } from '../../features/Auth/Auth.service'
 import { PrivateProps } from './Private.types'
 
 const Private: FC<PrivateProps> = () => {
@@ -43,7 +43,12 @@ const Private: FC<PrivateProps> = () => {
   return (
     <div className="container flex align-items-start justify-content-center">
       {!!user ? (
-        <Card title="User profile" subTitle="Cognito user details" footer={footerTemplate} className="text-left w-5">
+        <Card
+          title="User profile"
+          subTitle="Cognito user details"
+          footer={footerTemplate}
+          className="text-left w-5"
+        >
           <div className="grid mt-3">
             <div className="col-3 text-500">Username:</div>
             <div className="col">
@@ -58,7 +63,9 @@ const Private: FC<PrivateProps> = () => {
           </div>
           <div className="grid">
             <div className="col-3 text-500">Email:</div>
-            <div className="col text-color-secondary font-bold">{user?.email}</div>
+            <div className="col text-color-secondary font-bold">
+              {user?.email}
+            </div>
           </div>
           <div className="grid">
             <div className="col-3 text-500">Verified:</div>

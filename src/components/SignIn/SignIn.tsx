@@ -1,5 +1,3 @@
-import '../../styles/main.scss'
-
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Divider } from 'primereact/divider'
@@ -12,13 +10,16 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import { resetErrors, resetState, signIn } from '../../features/Auth/AuthSlice'
+import { signIn } from '../../features/Auth/Auth.service'
+import { resetErrors, resetState } from '../../features/Auth/Auth.slice'
 import { SignInForm, SignInProps } from './SignIn.types'
 
 export const SignIn: FC<SignInProps> = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { status, message, isAuthenticated } = useAppSelector((state) => state.auth)
+  const { status, message, isAuthenticated } = useAppSelector(
+    (state) => state.auth
+  )
 
   const [showMessage, setShowMessage] = useState(false)
   const [formData, setFormData] = useState<SignInForm>()
@@ -34,7 +35,10 @@ export const SignIn: FC<SignInProps> = () => {
   useEffect(() => {
     if (message === "User is not confirmed.") {
       navigate("/confirm", { state: { email: formData?.email } })
-    } else if ([StoreStatus.Failed, StoreStatus.Succeeded].includes(status) && !showMessage) {
+    } else if (
+      [StoreStatus.Failed, StoreStatus.Succeeded].includes(status) &&
+      !showMessage
+    ) {
       setShowMessage(true)
     }
   }, [formData?.email, message, navigate, showMessage, status])
@@ -53,7 +57,9 @@ export const SignIn: FC<SignInProps> = () => {
   }
 
   const getFormErrorMessage = (name: keyof SignInForm) => {
-    return errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    return (
+      errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    )
   }
 
   const onCloseDialog = () => {
@@ -66,7 +72,9 @@ export const SignIn: FC<SignInProps> = () => {
   const dialogFooter = (
     <div className="flex justify-content-center">
       <Button
-        label={status === StoreStatus.Succeeded ? "Access my account" : "Try again"}
+        label={
+          status === StoreStatus.Succeeded ? "Access my account" : "Try again"
+        }
         className="p-button-text"
         autoFocus
         onClick={onCloseDialog}
@@ -101,8 +109,13 @@ export const SignIn: FC<SignInProps> = () => {
         <div className="flex justify-content-center flex-column pt-6 px-3">
           <h4 className="flex align-items-center">
             <i
-              className={`pi pi-${isAuthenticated ? "check-circle" : "exclamation-triangle"} mr-2`}
-              style={{ fontSize: "2rem", color: isAuthenticated ? "var(--green-500)" : "var(--red-500)" }}
+              className={`pi pi-${
+                isAuthenticated ? "check-circle" : "exclamation-triangle"
+              } mr-2`}
+              style={{
+                fontSize: "2rem",
+                color: isAuthenticated ? "var(--green-500)" : "var(--red-500)",
+              }}
             ></i>
             Authentication {isAuthenticated ? "Succeeded!" : "Failed!"}
           </h4>
@@ -128,13 +141,25 @@ export const SignIn: FC<SignInProps> = () => {
                   control={control}
                   rules={{
                     required: "Email is required.",
-                    pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, message: "Invalid email address. E.g. example@email.com" },
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: "Invalid email address. E.g. example@email.com",
+                    },
                   }}
                   render={({ field, fieldState }) => (
-                    <InputText id={field.name} {...field} className={classNames({ "p-invalid": fieldState.error?.message })} />
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
+                    />
                   )}
                 />
-                <label htmlFor="email" className={classNames({ "p-error": !!errors.email })}>
+                <label
+                  htmlFor="email"
+                  className={classNames({ "p-error": !!errors.email })}
+                >
                   Email address*
                 </label>
               </span>
@@ -151,20 +176,30 @@ export const SignIn: FC<SignInProps> = () => {
                       id={field.name}
                       {...field}
                       toggleMask
-                      className={classNames({ "p-invalid": fieldState.error?.message })}
+                      className={classNames({
+                        "p-invalid": fieldState.error?.message,
+                      })}
                       header={passwordHeader}
                       footer={passwordFooter}
                     />
                   )}
                 />
-                <label htmlFor="password" className={classNames({ "p-error": errors.password })}>
+                <label
+                  htmlFor="password"
+                  className={classNames({ "p-error": errors.password })}
+                >
                   Password*
                 </label>
               </span>
               {getFormErrorMessage("password")}
             </div>
 
-            <Button type="submit" label="Sign in" className="mt-2" loading={status === StoreStatus.Loading} />
+            <Button
+              type="submit"
+              label="Sign in"
+              className="mt-2"
+              loading={status === StoreStatus.Loading}
+            />
           </form>
           <p className="mt-4">
             Don't remember your password?{" "}

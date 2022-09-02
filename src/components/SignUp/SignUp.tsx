@@ -1,5 +1,3 @@
-import '../../styles/main.scss'
-
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Divider } from 'primereact/divider'
@@ -12,7 +10,8 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import { resetErrors, resetState, signUp } from '../../features/Auth/AuthSlice'
+import { signUp } from '../../features/Auth/Auth.service'
+import { resetErrors, resetState } from '../../features/Auth/Auth.slice'
 import { SignUpForm, SignUpProps } from './SignUp.types'
 
 export const SignUp: FC<SignUpProps> = () => {
@@ -35,7 +34,10 @@ export const SignUp: FC<SignUpProps> = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if ([StoreStatus.Failed, StoreStatus.Succeeded].includes(status) && !showMessage) {
+    if (
+      [StoreStatus.Failed, StoreStatus.Succeeded].includes(status) &&
+      !showMessage
+    ) {
       setShowMessage(true)
     }
   }, [formData?.email, message, navigate, showMessage, status])
@@ -55,7 +57,9 @@ export const SignUp: FC<SignUpProps> = () => {
   }
 
   const getFormErrorMessage = (name: keyof SignUpForm) => {
-    return errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    return (
+      errors[name] && <small className="p-error">{errors[name]?.message}</small>
+    )
   }
 
   const onCloseDialog = () => {
@@ -69,7 +73,9 @@ export const SignUp: FC<SignUpProps> = () => {
   const dialogFooter = (
     <div className="flex justify-content-center">
       <Button
-        label={status === StoreStatus.Succeeded ? "Confirm account" : "Try again"}
+        label={
+          status === StoreStatus.Succeeded ? "Confirm account" : "Try again"
+        }
         className="p-button-text"
         autoFocus
         onClick={onCloseDialog}
@@ -104,10 +110,21 @@ export const SignUp: FC<SignUpProps> = () => {
         <div className="flex justify-content-center flex-column pt-6 px-3">
           <h4 className="flex align-items-center">
             <i
-              className={`pi pi-${status === StoreStatus.Succeeded ? "check-circle" : "exclamation-triangle"} mr-2`}
-              style={{ fontSize: "2rem", color: status === StoreStatus.Succeeded ? "var(--green-500)" : "var(--red-500)" }}
+              className={`pi pi-${
+                status === StoreStatus.Succeeded
+                  ? "check-circle"
+                  : "exclamation-triangle"
+              } mr-2`}
+              style={{
+                fontSize: "2rem",
+                color:
+                  status === StoreStatus.Succeeded
+                    ? "var(--green-500)"
+                    : "var(--red-500)",
+              }}
             ></i>
-            Registration {status === StoreStatus.Succeeded ? "Succeeded!" : "Failed!"}
+            Registration{" "}
+            {status === StoreStatus.Succeeded ? "Succeeded!" : "Failed!"}
           </h4>
           {status === StoreStatus.Succeeded ? (
             <p style={{ lineHeight: 1.5 }}>
@@ -115,7 +132,8 @@ export const SignUp: FC<SignUpProps> = () => {
               <b>
                 {formData?.firstName} {formData?.lastName}
               </b>{" "}
-              . Please check <b>{formData?.email}</b> for activation instructions.
+              . Please check <b>{formData?.email}</b> for activation
+              instructions.
             </p>
           ) : (
             <code style={{ lineHeight: 1.5 }}>{message}</code>
@@ -135,10 +153,20 @@ export const SignUp: FC<SignUpProps> = () => {
                     control={control}
                     rules={{ required: "Name is required." }}
                     render={({ field, fieldState }) => (
-                      <InputText id={field.name} {...field} autoFocus className={classNames({ "p-invalid": fieldState.error?.message })} />
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        autoFocus
+                        className={classNames({
+                          "p-invalid": fieldState.error?.message,
+                        })}
+                      />
                     )}
                   />
-                  <label htmlFor="firstName" className={classNames({ "p-error": errors.firstName })}>
+                  <label
+                    htmlFor="firstName"
+                    className={classNames({ "p-error": errors.firstName })}
+                  >
                     First name*
                   </label>
                 </span>
@@ -151,10 +179,20 @@ export const SignUp: FC<SignUpProps> = () => {
                     control={control}
                     rules={{ required: "Name is required." }}
                     render={({ field, fieldState }) => (
-                      <InputText id={field.name} {...field} autoFocus className={classNames({ "p-invalid": fieldState.error?.message })} />
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        autoFocus
+                        className={classNames({
+                          "p-invalid": fieldState.error?.message,
+                        })}
+                      />
                     )}
                   />
-                  <label htmlFor="lastName" className={classNames({ "p-error": errors.lastName })}>
+                  <label
+                    htmlFor="lastName"
+                    className={classNames({ "p-error": errors.lastName })}
+                  >
                     Last name*
                   </label>
                 </span>
@@ -168,13 +206,26 @@ export const SignUp: FC<SignUpProps> = () => {
                     control={control}
                     rules={{
                       required: "Email is required.",
-                      pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i, message: "Invalid email address. E.g. example@email.com" },
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                        message:
+                          "Invalid email address. E.g. example@email.com",
+                      },
                     }}
                     render={({ field, fieldState }) => (
-                      <InputText id={field.name} {...field} className={classNames({ "p-invalid": fieldState.error?.message })} />
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        className={classNames({
+                          "p-invalid": fieldState.error?.message,
+                        })}
+                      />
                     )}
                   />
-                  <label htmlFor="email" className={classNames({ "p-error": !!errors.email })}>
+                  <label
+                    htmlFor="email"
+                    className={classNames({ "p-error": !!errors.email })}
+                  >
                     Email*
                   </label>
                 </span>
@@ -191,13 +242,18 @@ export const SignUp: FC<SignUpProps> = () => {
                         id={field.name}
                         {...field}
                         toggleMask
-                        className={classNames({ "p-invalid": fieldState.error?.message })}
+                        className={classNames({
+                          "p-invalid": fieldState.error?.message,
+                        })}
                         header={passwordHeader}
                         footer={passwordFooter}
                       />
                     )}
                   />
-                  <label htmlFor="password" className={classNames({ "p-error": errors.password })}>
+                  <label
+                    htmlFor="password"
+                    className={classNames({ "p-error": errors.password })}
+                  >
                     Password*
                   </label>
                 </span>
@@ -214,13 +270,20 @@ export const SignUp: FC<SignUpProps> = () => {
                         id={field.name}
                         {...field}
                         toggleMask
-                        className={classNames({ "p-invalid": fieldState.error?.message })}
+                        className={classNames({
+                          "p-invalid": fieldState.error?.message,
+                        })}
                         header={passwordHeader}
                         footer={passwordFooter}
                       />
                     )}
                   />
-                  <label htmlFor="confirmPassword" className={classNames({ "p-error": errors.confirmPassword })}>
+                  <label
+                    htmlFor="confirmPassword"
+                    className={classNames({
+                      "p-error": errors.confirmPassword,
+                    })}
+                  >
                     Confirm password*
                   </label>
                 </span>
@@ -228,7 +291,12 @@ export const SignUp: FC<SignUpProps> = () => {
               </div>
             </div>
 
-            <Button type="submit" label="Get started" className="mt-2" loading={status === StoreStatus.Succeeded} />
+            <Button
+              type="submit"
+              label="Get started"
+              className="mt-2"
+              loading={status === StoreStatus.Succeeded}
+            />
           </form>
           <div className="flex justify-content-center mt-2">
             <p>
