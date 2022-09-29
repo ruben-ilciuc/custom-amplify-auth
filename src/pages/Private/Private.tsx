@@ -3,52 +3,50 @@ import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { Tag } from 'primereact/tag'
-import React, { FC, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+import { Auth } from '@aws-amplify/auth'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
-import { refreshToken, signOut } from '../../features/Auth/Auth.service'
+import { signOut } from '../../features/Auth/Auth.service'
 import { PrivateProps } from './Private.types'
 
 const Private: FC<PrivateProps> = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { user, status } = useAppSelector((state) => state.auth)
+  const { user, isAuthenticated, status } = useAppSelector((state) => state.auth)
 
   useEffect(() => {
-    dispatch(refreshToken()).then((userAttributes) => {
-      if (!userAttributes.payload) {
-        navigate("/", { replace: true })
-      }
-    })
-  }, [dispatch, navigate])
+    if (!isAuthenticated && [StoreStatus.Succeeded, StoreStatus.Failed].includes(status)) {
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate, status])
 
   const logUserOut = () => {
-    dispatch(signOut()).then(() => navigate("/", { replace: true }))
+    dispatch(signOut()).then(() => navigate('/', { replace: true }))
   }
 
   const footerTemplate = () => (
     <>
       <Divider />
-      <Button
-        className="p-button-raised p-button-primary p-button-text mx-auto block"
-        label="Sign out"
-        onClick={logUserOut}
-        loading={status === StoreStatus.Loading}
-      />
+      <div className="flex align-items-center justify-content-between">
+        <Button
+          className="p-button-raised p-button-primary p-button-text"
+          label="Sign out"
+          onClick={logUserOut}
+          loading={status === StoreStatus.Loading}
+        />
+        <Button className="p-button-text p-button-plain" label="Log user info" onClick={() => Auth.currentAuthenticatedUser().then(console.log)} />
+      </div>
     </>
   )
 
   return (
     <div className="container flex align-items-start justify-content-center">
-      {!!user ? (
-        <Card
-          title="User profile"
-          subTitle="Cognito user details"
-          footer={footerTemplate}
-          className="text-left w-5"
-        >
+      {isAuthenticated ? (
+        <Card title="User profile" subTitle="Cognito user details" footer={footerTemplate} className="w-5">
           <div className="grid mt-3">
             <div className="col-3 text-500">Username:</div>
             <div className="col">
@@ -63,9 +61,7 @@ const Private: FC<PrivateProps> = () => {
           </div>
           <div className="grid">
             <div className="col-3 text-500">Email:</div>
-            <div className="col text-color-secondary font-bold">
-              {user?.email}
-            </div>
+            <div className="col text-color-secondary font-bold">{user?.email}</div>
           </div>
           <div className="grid">
             <div className="col-3 text-500">Verified:</div>
@@ -77,7 +73,7 @@ const Private: FC<PrivateProps> = () => {
           </div>
         </Card>
       ) : (
-        <ProgressSpinner style={{ width: "120px", height: "120px" }} />
+        <ProgressSpinner style={{ width: '120px', height: '120px' }} />
       )}
     </div>
   )

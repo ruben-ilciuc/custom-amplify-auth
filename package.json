@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@aws-amplify/auth": "^4.6.1",
-    "@aws-amplify/ui-react": "^3.3.0",
     "@reduxjs/toolkit": "^1.8.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",

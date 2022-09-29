@@ -4,7 +4,6 @@ import { StoreStatus } from '../../common/types'
 import {
   confirmSignUp,
   forgotPassword,
-  newPassword,
   refreshToken,
   resendForgotPassword,
   resendSignUp,
@@ -17,40 +16,36 @@ import { AuthState } from './Auth.types'
 
 const initialState: AuthState = {
   isAuthenticated: false,
-  message: "",
+  message: '',
   status: StoreStatus.Idle,
   user: null,
 }
 
 export const AuthSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
-    resetState: () => ({
-      ...initialState,
-    }),
-    resetStatus: (state) => ({
+    setUser: (state, { payload }) => ({
       ...state,
-      status: StoreStatus.Idle,
-    }),
-    resetErrors: (state) => ({
-      ...state,
-      message: "",
-      status: StoreStatus.Idle,
+      isAuthenticated: true,
+      user: payload,
     }),
   },
   extraReducers: (builder) => {
     builder.addCase(signUp.fulfilled, (state) => ({
       ...state,
+      message: 'Your account is registered. Please check your email for activation instructions.',
       status: StoreStatus.Succeeded,
     }))
     builder.addCase(confirmSignUp.fulfilled, (state) => ({
       ...state,
+      message: 'Account confirmed.',
       status: StoreStatus.Succeeded,
     }))
     builder.addCase(resendSignUp.fulfilled, (state) => ({
       ...state,
-      status: StoreStatus.Idle,
+      message: 'Please check your email for activation instructions.',
+      status: StoreStatus.Succeeded,
     }))
     builder.addCase(signIn.fulfilled, (state, { payload }) => ({
       ...state,
@@ -70,17 +65,16 @@ export const AuthSlice = createSlice({
       ...state,
       status: StoreStatus.Succeeded,
     }))
-    builder.addCase(newPassword.fulfilled, (state, { payload }) => ({
-      ...state,
-      status: StoreStatus.Succeeded,
-      user: payload,
-    }))
     builder.addCase(signOut.fulfilled, () => initialState)
     builder.addCase(refreshToken.fulfilled, (state, { payload }) => ({
       ...state,
       user: payload,
       isAuthenticated: true,
       status: StoreStatus.Succeeded,
+    }))
+    builder.addCase(refreshToken.rejected, (state) => ({
+      ...state,
+      status: StoreStatus.Failed,
     }))
 
     // Handle pending & rejected requests
@@ -93,14 +87,13 @@ export const AuthSlice = createSlice({
         forgotPassword.pending,
         resendForgotPassword.pending,
         resetPassword.pending,
-        newPassword.pending,
         signOut.pending,
-        refreshToken.pending
+        refreshToken.pending,
       ),
-      (state) => ({
-        ...state,
+      () => ({
+        ...initialState,
         status: StoreStatus.Loading,
-      })
+      }),
     )
     builder.addMatcher(
       isAnyOf(
@@ -111,19 +104,17 @@ export const AuthSlice = createSlice({
         forgotPassword.rejected,
         resendForgotPassword.rejected,
         resetPassword.rejected,
-        newPassword.rejected,
         signOut.rejected,
-        refreshToken.rejected
       ),
       (state, { error }) => ({
         ...state,
         status: StoreStatus.Failed,
-        message: error.message || "",
-      })
+        message: error.message || '',
+      }),
     )
   },
 })
 
-export const { resetStatus, resetState, resetErrors } = AuthSlice.actions
+export const { setUser } = AuthSlice.actions
 
 export default AuthSlice.reducer

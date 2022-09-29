@@ -1,5 +1,4 @@
-import { StoreStatus } from '../../common/types'
-import { CognitoAttributes } from '../../components/Private/Private.types'
+import { CognitoAttributes, StoreStatus } from '../../common/types'
 
 export interface AuthState {
   isAuthenticated: boolean

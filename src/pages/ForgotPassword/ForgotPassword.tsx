@@ -1,14 +1,13 @@
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { classNames } from 'primereact/utils'
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { StoreStatus } from '../../common/types'
 import { forgotPassword } from '../../features/Auth/Auth.service'
-import { resetState } from '../../features/Auth/Auth.slice'
 import { ForgotPasswordForm, ForgotPasswordProps } from './ForgotPassword.types'
 
 export const ForgotPassword: FC<ForgotPasswordProps> = () => {
@@ -18,16 +17,12 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
 
   const [formData, setFormData] = useState<ForgotPasswordForm>()
   const defaultValues: ForgotPasswordForm = {
-    email: "",
+    email: '',
   }
 
   useEffect(() => {
-    if (
-      [StoreStatus.Failed, StoreStatus.Succeeded].includes(status) &&
-      formData
-    ) {
-      dispatch(resetState())
-      navigate("/reset-password", { state: formData })
+    if (status === StoreStatus.Succeeded) {
+      navigate('/reset-password', { state: formData })
     }
   }, [dispatch, formData, navigate, status])
 
@@ -45,9 +40,7 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
   }
 
   const getFormErrorMessage = (name: keyof ForgotPasswordForm) => {
-    return (
-      errors[name] && <small className="p-error">{errors[name]?.message}</small>
-    )
+    return errors[name] && <small className="p-error">{errors[name]?.message}</small>
   }
 
   return (
@@ -63,10 +56,10 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
                   name="email"
                   control={control}
                   rules={{
-                    required: "Email is required.",
+                    required: 'Email is required.',
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                      message: "Invalid email address. E.g. example@email.com",
+                      message: 'Invalid email address. E.g. example@email.com',
                     },
                   }}
                   render={({ field, fieldState }) => (
@@ -74,27 +67,19 @@ export const ForgotPassword: FC<ForgotPasswordProps> = () => {
                       id={field.name}
                       {...field}
                       className={classNames({
-                        "p-invalid": fieldState.error?.message,
+                        'p-invalid': fieldState.error?.message,
                       })}
                     />
                   )}
                 />
-                <label
-                  htmlFor="email"
-                  className={classNames({ "p-error": !!errors.email })}
-                >
+                <label htmlFor="email" className={classNames({ 'p-error': !!errors.email })}>
                   Email address*
                 </label>
               </span>
-              {getFormErrorMessage("email")}
+              {getFormErrorMessage('email')}
             </div>
 
-            <Button
-              type="submit"
-              label="Request instructions"
-              className="mt-2"
-              loading={status === StoreStatus.Loading}
-            />
+            <Button type="submit" label="Request instructions" className="mt-2" loading={status === StoreStatus.Loading} />
           </form>
         </div>
       </div>
