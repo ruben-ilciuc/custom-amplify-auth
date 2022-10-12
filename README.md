@@ -1,16 +1,16 @@
-# How to create a custom UI authentication with Amplify using ReactJS
+# How to create a custom UI authentication with React using Amplify
 
-In this article we'll going to cover the Amplify authentication with custom UI using ReactJS. It requires basic knowledge about **react@18** and **redux toolkit**.
+In this article we'll going to cover how to implement a custom UI for the authentication with Cognito in a React app using the Amplify library. It requires basic knowledge about **react@18** and **redux toolkit**.
 
-The application that I'm presenting to you can be find here: [custom-amplify-auth](https://github.com/ruben-ilciuc/custom-amplify-auth)
+You can find the final code here: [custom-amplify-auth](https://github.com/ruben-ilciuc/custom-amplify-auth)
 
 ## ! IMPORTANT
 
-Please, take into consideration that this approach is **NOT** fully secured since you store the `idToken`, `accessToken`, `refreshToken` and other sensitive information about the user in the Local Storage. This opens the door for **XXS** and **CSRF** attacks.
+Please, take into consideration that this approach is **NOT** fully secured since you store the `idToken`, `accessToken`, `refreshToken` and other sensitive information about the user in the Local Storage. This opens the door for **XXS** and **CSRF** attacks. [See this conversation for more details](https://github.com/aws-amplify/amplify-js/issues/3224)
 
 ## Summary
 
-- [How to create a custom UI authentication with Amplify using ReactJS](#how-to-create-a-custom-ui-authentication-with-amplify-using-reactjs)
+- [How to create a custom UI authentication with React using Amplify](#how-to-create-a-custom-ui-authentication-with-react-using-amplify)
   - [! IMPORTANT](#-important)
   - [Summary](#summary)
   - [1. Configure Cognito](#1-configure-cognito)
@@ -30,9 +30,9 @@ Please, take into consideration that this approach is **NOT** fully secured sinc
 
 ## 1. Configure Cognito
 
-Before configuring the Cognito you need to create an account to AWS Amazon. For creating the account you need to provide credit card information for validation and they will charge you with 1.00 USD. But don't worry, you'll get the money back in 3-5 business days and you'll get a year free tier.
+Before configuring the Cognito you need to create an account in Amazon AWS. For creating the account you need to provide credit card information for validation and they will charge you 1.00 USD. But don't worry, you'll get the money back in 3-5 business days and you'll get a free tier for a year.
 
-In order to keep this article short I wont go through Cognito configuration step by step, but I give you an overview of my configuration:
+In order to keep this article short I wont go through Cognito configuration step by step, but I will give you an overview of my configuration:
 
 | Option                                               | Value                                                                                                                                        |
 | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,7 +52,7 @@ In order to keep this article short I wont go through Cognito configuration step
 
 ## 2. Initialize ReactJS app
 
-Before starting the react project make sure the Node version is the same to have a similar result as shown in this article or adapt it to your Node version: v16.16.0
+Before starting the react project make sure the Node version is the same as mine to have a similar result as shown in this article otherwise adapt it to your Node version: `v16.16.0`
 
 To initialize the app use command:
 
@@ -60,17 +60,17 @@ To initialize the app use command:
 npx create-react-app my-app --template redux-typescript
 ```
 
-It will create a boilerplate from where you can start codding and don't have to worry about webpack or babel. All of it are preconfigured and hidden.
+It will create a boilerplate from where you can start codding and don't have to worry about webpack or babel. All of them are pre configured and hidden.
 
 ## 3. Configure Amplify
 
-Install the amplify package using command:
+Install the amplify package using the command:
 
 ```shell
 npm install @aws-amplify/auth
 ```
 
-In the `src/app` directory create a new file `aws-config.ts` where we configure the amplify to use our Cognito for authentication.
+In the `src/app` directory create a new file `aws-config.ts` where we configure the amplify library to use our Cognito user pool for authentication.
 
 ```typescript
 import { Auth } from '@aws-amplify/auth'
@@ -84,7 +84,7 @@ Auth.configure({
 })
 ```
 
-Here, the amplify library creates a connection with our Cognito and provides us APIs from where we can build out custom Authentication.
+Here, the amplify library creates a connection with our Cognito and provides us APIs which we will use to build our custom authentication UI.
 
 In order to access those APIs, it needs to be initialized at the start of our application. So, in the `index.tsx` at the top add the next line:
 
@@ -92,7 +92,7 @@ In order to access those APIs, it needs to be initialized at the start of our ap
 import './app/aws-config' // amplify auth init
 ```
 
-Last but not least, create a file in the rood directory named `.env` and add:
+Last but not least, create a file in the root directory named `.env` and add:
 
 ```properties
 REACT_APP_USER_POOL_ID=<ADD_YOUR_USER_POOL_ID>
@@ -100,13 +100,13 @@ REACT_APP_CLIENT_ID=<ADD_YOUR_CLIENT_ID>
 REACT_APP_REGION=<ADD_YOUR_REGION>
 ```
 
-Now, our application is fully configured to use amplify for authentication. The only part that our application needs are the authentication components.
+Now, our application is fully configured and ready to use amplify for authentication. The only part that our application needs is the authentication UI.
 
 ## 4. Authentication components
 
 In the `src/feature` directory we are going to add the configuration for our state management.
 
-Create a new directory `Auth` and inside it create a few files:
+Create a new directory `Auth` and inside it, create the following files:
 
 - `Auth.service.ts` - In here we'll create our thunk functions
 - `Auth.slice.ts` - In here we'll add the logic for our reducer
@@ -133,7 +133,7 @@ For more information see [Amplify Sign Up documentation](https://docs.amplify.aw
 
 - **Secondly, create the logic for our Sign Up thunk in our reducer file `Auth.slice.ts`**
 
-Our initial state will have a `message` to provide a feedback to the user, `status` which will have 4 states `Idle, Loading, Failed, Succeeded`, `user` for which I had to create a custom type for it, because the library doesn't provide any, along with `isAuthenticated`.
+Our initial state will have a `message` prop to provide some feedback to the user, `status` which will have 4 states `Idle, Loading, Failed, Succeeded`, `user` for which I had to create a custom type for, because the library doesn't provide any, along with `isAuthenticated`.
 
 ```typescript
 const initialState: AuthState = {
@@ -177,7 +177,7 @@ extraReducers: (builder) => {
 ```
 
 So, when the sign up request succeeded we set a message and a status. Same when the request failed.  
-And to show the feedback to the user we'll create a custom component specific for that. But we'll get there.
+And to show the feedback to the user we'll create a custom component specific for that. But we'll get there later.
 
 When the request is in pending we want to reset the state and set the status to `Loading`.
 
@@ -208,7 +208,7 @@ In the `/src/components` create a `Message.tsx` file and import the `useAppSelec
 import { useAppSelector } from '../app/hooks'
 ```
 
-To use the it we do something like:
+To use it we do something like:
 
 ```typescript
 const { message, status } = useAppSelector((state) => state.auth)
@@ -216,9 +216,9 @@ const { message, status } = useAppSelector((state) => state.auth)
 
 Well, it depends on what you store. In our care `state.auth` is an object that has message and status as properties; in this case we can destruct the `auth` object and get what we need from it.
 
-I'm using [PrimeReact](https://www.primefaces.org/primereact) as UI Components and they have a `Message` component and it has states (severity as they call): _success, info, warn, error_.
+I'm using [PrimeReact](https://www.primefaces.org/primereact) as UI Components and they have a `Message` component and it has states (severity as they call it): _success, info, warn, error_.
 
-And this custom component will be imported in all our component where a feedback is needed or you can import it once in the `App.tsx`.
+And this custom component will be imported in all our components where feedback is needed otherwise you can import it once in the `App.tsx`.
 
 - **Create a route for this page**
 
@@ -277,7 +277,7 @@ From now on this part will be simple. We just have to build the case for succeed
 
 - **Third, let's use our _confirmSignUp_ thunk**
 
-Create a new page for confirmation which will have a form where user can add the code. But, in order to confirm the user we need also the email.
+Create a new page for confirmation which will have a form where user can input the code. But, in order to confirm the user we also need the email.
 
 So, in the Sign Up page we have to send the email to the new Sign Up Confirmation page.
 
@@ -289,7 +289,7 @@ useEffect(() => {
 }, [formData?.email, navigate, status])
 ```
 
-My approach here is to navigate (_see [useNavigate](https://reactrouter.com/en/main/hooks/use-navigate)_) to the Sign Up Confirm page and send the email from the form data as state when the status of the request succeeded.
+My approach here is to navigate (_see [useNavigate](https://reactrouter.com/en/main/hooks/use-navigate)_) to the Sign Up Confirm page and send the email field from the form data as state when the status of the request succeeded.
 
 Now in the Sign Up Confirm page we can get the email by using the [useNavigate](https://reactrouter.com/en/main/hooks/use-location) hook from `react-router-dom`.
 
@@ -341,7 +341,7 @@ export const resendSignUp = createAsyncThunk('auth/resendSignUp', async ({ email
 })
 ```
 
-To resend the confirmation code to the use we need the email. From there cognito will take care of sending the new confirmation code.
+To resend the confirmation code to the user we need the email. From there cognito will take care of sending the new confirmation code.
 
 - **Secondly, create the logic for Resend Sign Up thunk in the reducer file `Auth.slice.ts`**
 
@@ -353,7 +353,7 @@ builder.addCase(resendSignUp.fulfilled, (state) => ({
 }))
 ```
 
-When the resend request succeeded we just show to the user a message that the confirmation instruction is sent to the email. For pending and rejected nut much to do there, just append as parameter in the `isAnyOf` function (e.g. _resendSignUp.pending_).
+When the resend request succeeded we just show to the user a message that the confirmation instructions are sent to the email. For pending and rejected there is not much to do, just append as parameter in the `isAnyOf` function (e.g. _resendSignUp.pending_).
 
 - **Third, let's use _resendSignUp_ thunk**
 
@@ -380,7 +380,7 @@ export const signIn = createAsyncThunk('auth/signIn', async ({ email, password }
 })
 ```
 
-I had to add a custom type, because the Auth.signIn returns an any promise. To see all the attributes just log the `cognitoUser` variable.  
+I had to add a custom type, because the Auth.signIn returns an `any` promise. To see all the attributes just log the `cognitoUser` variable.  
 There is also a method you can call to get the attributes `getUserAttributes` or `getUserData`, but it takes a callback function and returns void which, in our case, is not feasible. We need to return the user data from our thunk function to the reducer to be able to store it in the redux for later use.
 
 - **Secondly, create the logic for Sign In thunk in the reducer file `Auth.slice.ts`**
@@ -398,13 +398,13 @@ Once we get the user attributes from the response we should set the user data an
 
 - **Third, let's use _signIn_ thunk**
 
-Create a new page for Sign In with email and password and on submit form dispatch the thunk function.
+Create a new page for Sign In with email and password and on form submit dispatch the thunk function.
 
 ```typescript
 dispatch(signIn(data))
 ```
 
-After sending a request to the Cognito we will get few different responses:
+After sending a request to the Cognito we can get few different responses:
 
 1. Status code `400` and a message: `User is not confirmed.`
 2. Status code `200` and a challengeName (_see [DOCS](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RespondToAuthChallenge.html)_) ~ I won't touch this part since this article is already long enough ~
@@ -447,7 +447,7 @@ In the `App.tsx` add a new route for Sign In page.
 <Route index element={<SignIn />} />
 ```
 
-Next will be to implement the ability to reset the password if the user forgets it.
+Next thing to do will be to implement the ability to reset the password if the user forgets it.
 
 ### Forgot Password
 
@@ -470,7 +470,7 @@ builder.addCase(forgotPassword.fulfilled, () => ({
 }))
 ```
 
-I added the `initialState` instead of `state` because I wanted to make sure that the redux is clean and the `messages` is not carried to the next page.
+I added the `initialState` instead of `state` because I wanted to make sure that the redux is clean and the `message` is not carried to the next page.
 
 - **Third, let's use _forgotPassword_ thunk**
 
@@ -571,7 +571,7 @@ export const signOut = createAsyncThunk('auth/signOut', async () => {
 })
 ```
 
-For sign out I created a thunk to be able to remove all the stats from reducer. Also, if you need to revoke all the sessions you might want to add `{ global: true }` as parameter to the `Auth.signOut` method.
+For sign out I created a thunk to be able to remove all the state from reducer. Also, if you need to revoke all the sessions you might want to add `{ global: true }` as parameter to the `Auth.signOut` method.
 
 - **Secondly, create the logic for Sign Out thunk in the reducer file `Auth.slice.ts`**
 
@@ -598,8 +598,8 @@ export const refreshToken = createAsyncThunk('auth/refreshToken', async () => {
 })
 ```
 
-`currentAuthenticatedUser` will get the user data from localStorage. If the access token expired it will make a request to Cognito which will refresh also the token for you. So, with Amplify you don't have to do much with it. It will do for you.  
-Here you have also the option to force the Amplify to get the data directly from Cognito without checking the localStorage first just by adding `{ bypassCache: true }` as parameter to `currentAuthenticatedUser` method.
+`currentAuthenticatedUser` will get the user data from localStorage. If the access token is expired it will make a request to Cognito which will refresh the token for you. So, using Amplify you don't have to put too much effort in it. It work out of the box.  
+Here you also have the option to instruct Amplify to get a new token directly from Cognito without checking the localStorage first just by adding `{ bypassCache: true }` as parameter to `currentAuthenticatedUser` method.
 
 But we'll keep it as it is to have a faster response.
 
@@ -614,7 +614,7 @@ builder.addCase(refreshToken.fulfilled, (state, { payload }) => ({
 }))
 ```
 
-We are going to use the refresh token thunk every time our application is rendered. In order to keep the user authenticated in our application we need to set the user attributes in the reducer, because then the page is refreshed we lose all the data from redux.
+We are going to use the refresh token thunk every time our application is rendered. In order to keep the user authenticated in our application we need to set the user attributes in the reducer, because when the page is refreshed we lose all the data from redux.
 
 ```typescript
 builder.addCase(refreshToken.rejected, (state) => ({
@@ -623,7 +623,7 @@ builder.addCase(refreshToken.rejected, (state) => ({
 }))
 ```
 
-I created a separate case for rejected, because I didn't want to set also the message for it. The reason for it was that it checks if the user is authenticate, and if not, it will set a message that the user is not authenticated, even though the user just got there.  
+I created a separate case for rejected response, because I didn't want to set also the message for it. The reason for it was that it checks if the user is authenticated, and if not, it will set a message that the user is not authenticated, even though the user just got there.  
 Make sure that this case is before the `builder.addMatcher`. Otherwise you'll get an error message like:
 `` builder.addCase` should only be called before calling `builder.addMatcher ``
 
@@ -659,7 +659,7 @@ And, here you go, you have a functional authentication app using Amplify with cu
 
 ## 5. Conclusion
 
-This should cover the basics for how to create the authentication flow in ReactJS using Amplify. The approach presented should be just fine for a start-up or a personal project, but if your application is growing you might need to implement a new flow with a better security. Preferred a way where the front-end has no rights to access or modify the tokens.
+This should cover the basics for how to create the authentication flow in ReactJS using Amplify. The approach presented should be just fine for a start-up or a personal project, but if your application is growing you might need to implement a different flow including a back-end service with better security. Favor a way where the front-end has no rights to access or modify the access and refresh tokens.
 
 Also, as a developer, I like to improve myself. So, if you have any suggestions/questions don't hesitate to contact me.
 
