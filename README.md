@@ -1,17 +1,18 @@
-# How to create a custom UI authentication with React using Amplify
+# How to create an AWS Cognito custom UI authentication with React using Amplify
 
-In this article we'll going to cover how to implement a custom UI for the authentication with Cognito in a React app using the Amplify library. It requires basic knowledge about **react@18** and **redux toolkit**.
+Creating your own custom UI authentication in React using Amplify can be quite challenging, taking care of each step from sign-up to refresh token. That's why this article comes in handy. It covers all these steps from a code perspective and some general information about setting up the AWS Cognito.
+
 
 You can find the final code here: [custom-amplify-auth](https://github.com/ruben-ilciuc/custom-amplify-auth)
 
-## ! IMPORTANT
+## IMPORTANT
 
 Please, take into consideration that this approach is **NOT** fully secured since you store the `idToken`, `accessToken`, `refreshToken` and other sensitive information about the user in the Local Storage. This opens the door for **XXS** and **CSRF** attacks. [See this conversation for more details](https://github.com/aws-amplify/amplify-js/issues/3224)
 
 ## Summary
 
-- [How to create a custom UI authentication with React using Amplify](#how-to-create-a-custom-ui-authentication-with-react-using-amplify)
-  - [! IMPORTANT](#-important)
+- [How to create an AWS Cognito custom UI authentication with React using Amplify](#how-to-create-an-aws-cognito-custom-ui-authentication-with-react-using-amplify)
+  - [IMPORTANT](#important)
   - [Summary](#summary)
   - [1. Configure Cognito](#1-configure-cognito)
   - [2. Initialize ReactJS app](#2-initialize-reactjs-app)
